@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  postgres-db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: face-attendance
+      TZ: Asia/Ho_Chi_Minh
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./backups:/backups  # Mount the backup directory
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql  # Add init script for installing vector extension
+    ports:
+      - 62000:5432
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "admin"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  pgdata:  # Data storage volume for PostgreSQL
+  backups:  # Backup storage volume
